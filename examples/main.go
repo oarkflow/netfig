@@ -172,6 +172,14 @@ func (p *PacketCaptureNode) Run(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		}
 		defer handle.Close()
+		// Set BPF filter if provided in config
+		if f, ok := p.config["filter"].(string); ok && f != "" {
+			if err := handle.SetBPFFilter(f); err != nil {
+				log.Printf("[PacketCaptureNode] Error setting filter %s: %v", f, err)
+				return
+			}
+			log.Printf("[PacketCaptureNode] Applied BPF filter: %s", f)
+		}
 		packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 		packetChan := packetSource.Packets()
 		for {
@@ -224,11 +232,14 @@ func (p *PacketCaptureNode) Run(ctx context.Context, wg *sync.WaitGroup) {
 				} else if appLayer := packet.ApplicationLayer(); appLayer != nil {
 					payload := appLayer.Payload()
 					if len(payload) > 0 {
+						hexPayload := fmt.Sprintf("%x", payload)
 						textPayload := string(payload)
 						if strings.HasPrefix(textPayload, "GET") || strings.HasPrefix(textPayload, "POST") {
-							apiInfo = "Request Data: " + textPayload
+							apiInfo = "Request Data: " + textPayload + " | Hex: " + hexPayload
 						} else if strings.HasPrefix(textPayload, "HTTP/") {
-							apiInfo = "Response Data: " + textPayload
+							apiInfo = "Response Data: " + textPayload + " | Hex: " + hexPayload
+						} else {
+							apiInfo = "App Layer Data:  | Hex: " + hexPayload
 						}
 					}
 				}
@@ -306,6 +317,7 @@ func (l *LoggerNode) Run(ctx context.Context, wg *sync.WaitGroup) {
 func main() {
 	deviceFlag := flag.String("device", "", "Name of the network interface to use. If empty, you will be prompted.")
 	outputFlag := flag.String("output", "stdout", "Output sink: stdout or stderr.")
+	filterFlag := flag.String("filter", "", "BPF filter for packet capture (optional).")
 	flag.Parse()
 	log.Println("Starting Pipeline DAG...")
 	ctx, cancel := context.WithCancel(context.Background())
@@ -323,7 +335,9 @@ func main() {
 	netConfig := map[string]any{
 		"device": *deviceFlag,
 	}
-	packetConfig := map[string]any{}
+	packetConfig := map[string]any{
+		"filter": *filterFlag,
+	}
 	loggerConfig := map[string]any{
 		"outputType": *outputFlag,
 	}
