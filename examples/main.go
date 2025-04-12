@@ -19,6 +19,7 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
+	"github.com/phuslu/iploc" // added for IP to country lookup
 )
 
 type Data any
@@ -187,6 +188,25 @@ func (p *PacketCaptureNode) Run(ctx context.Context, wg *sync.WaitGroup) {
 				ip, _ := ipLayer.(*layers.IPv4)
 				srcIP := ip.SrcIP.String()
 				dstIP := ip.DstIP.String()
+
+				// New: IP to DNS resolution for source and destination IPs
+				srcDomain, dstDomain := "", ""
+				if names, err := net.LookupAddr(srcIP); err == nil && len(names) > 0 {
+					srcDomain = strings.TrimSuffix(names[0], ".")
+				}
+				if names, err := net.LookupAddr(dstIP); err == nil && len(names) > 0 {
+					dstDomain = strings.TrimSuffix(names[0], ".")
+				}
+
+				// New: IP to country lookup using github.com/phuslu/iploc
+				srcCountry, dstCountry := "Unknown", "Unknown"
+				if country := iploc.Country(ip.SrcIP); country != "" {
+					srcCountry = country
+				}
+				if country := iploc.Country(ip.DstIP); country != "" {
+					dstCountry = country
+				}
+
 				txRx := "Rx"
 				if strings.HasPrefix(srcIP, "192.168") || strings.HasPrefix(srcIP, "10.") {
 					txRx = "Tx"
@@ -212,7 +232,18 @@ func (p *PacketCaptureNode) Run(ctx context.Context, wg *sync.WaitGroup) {
 						}
 					}
 				}
-				summary := fmt.Sprintf("Packet %s | Src IP: %s, Dst IP: %s", txRx, srcIP, dstIP)
+				// Update summary to include IP and corresponding DNS domain (if available)
+				srcInfo := srcIP
+				if srcDomain != "" {
+					srcInfo += " (" + srcDomain + ")"
+				}
+				srcInfo += " [Country: " + srcCountry + "]"
+				dstInfo := dstIP
+				if dstDomain != "" {
+					dstInfo += " (" + dstDomain + ")"
+				}
+				dstInfo += " [Country: " + dstCountry + "]"
+				summary := fmt.Sprintf("Packet %s | Src: %s, Dst: %s", txRx, srcInfo, dstInfo)
 				if apiInfo != "" {
 					summary += fmt.Sprintf(" | %s", apiInfo)
 				}
