@@ -10,6 +10,7 @@ require (
 
 require (
 	github.com/goccy/go-reflect v1.2.0 // indirect
+	github.com/google/gopacket v1.1.19
 	github.com/oarkflow/date v0.0.4 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 )
