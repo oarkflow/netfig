@@ -20,10 +20,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Juniper/go-netconf/netconf"
 	"github.com/oarkflow/bcl"
-	"github.com/oarkflow/netfig/dsl"
 	"golang.org/x/crypto/ssh"
+
+	"github.com/oarkflow/netfig/netconf"
+
+	"github.com/oarkflow/netfig/dsl"
 )
 
 func startHTTPServer() {
@@ -360,8 +362,8 @@ func (a *SNMPAdapter) ApplyConfig(ctx context.Context, d *dsl.Device) error {
 type RESTCONFAdapterOption func(*RESTCONFAdapter)
 
 type RESTCONFAdapter struct {
-	EndpointFormat string // e.g., "http://%s:%d/restconf/data/config"
-	ContentType    string // e.g., "application/yang-data+json"
+	EndpointFormat string
+	ContentType    string
 }
 
 func NewRESTCONFAdapter(opts ...RESTCONFAdapterOption) *RESTCONFAdapter {

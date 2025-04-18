@@ -3,7 +3,6 @@ module github.com/oarkflow/netfig
 go 1.24.2
 
 require (
-	github.com/Juniper/go-netconf v0.3.0
 	github.com/oarkflow/bcl v0.0.2
 	golang.org/x/crypto v0.37.0
 )
