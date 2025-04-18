@@ -4,6 +4,8 @@ github.com/google/gopacket v1.1.19 h1:ves8RnFZPGiFnTS0uPQStjwru6uO6h+nlr9j6fL7kF
 github.com/google/gopacket v1.1.19/go.mod h1:iJ8V8n6KS+z2U1A8pUwu8bW5SyEMkXJB8Yo/Vo+TKTo=
 github.com/oarkflow/bcl v0.0.2 h1:dfH7lx2dhGyU0yR+/PA/txUQDC3Avm8X2DyX/vyMI6Y=
 github.com/oarkflow/bcl v0.0.2/go.mod h1:KRK4ze8BDANI+lzVR1GO8kD63/ulDtflvNuhnUJj0HQ=
+github.com/oarkflow/bcl v0.0.4 h1:/3c6mUjY/1FvtE+ymA/DF4ISeNZ51U4yzTBDCnQFsEI=
+github.com/oarkflow/bcl v0.0.4/go.mod h1:ZV+O5CjOXyJa14jvKXTxvzhvpZE5elYwwKgvnQcmh+Q=
 github.com/oarkflow/date v0.0.4 h1:EwY/wiS3CqZNBx7b2x+3kkJwVNuGk+G0dls76kL/fhU=
 github.com/oarkflow/date v0.0.4/go.mod h1:xQTFc6p6O5VX6J75ZrPJbelIFGca1ASmhpgirFqL8vM=
 github.com/oarkflow/expr v0.0.11 h1:H6h+dIUlU+xDlijMXKQCh7TdE6MGVoFPpZU7q/dziRI=
